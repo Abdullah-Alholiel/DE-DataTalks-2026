@@ -24,10 +24,6 @@ def q1_pip_version():
         return f'Error running docker: {e}'
 
 
-def q2_pgadmin_host_port():
-    # For the homework's provided compose snippet (service name db, exposed 5433->5432),
-    # pgadmin should connect using service hostname `db` and port 5432.
-    return 'db:5432'
 
 
 def connect_engine():
@@ -132,16 +128,11 @@ def q6_dropoff_zone_largest_tip(engine, dt_col, year):
         return res['drop_zone'].iloc[0]
 
 
-def q7_terraform_workflow():
-    # Homework answer options: the correct sequence is init -> apply (auto-approve) -> destroy
-    return 'terraform init, terraform apply -auto-approve, terraform destroy'
-
 
 if __name__ == '__main__':
     print('Question 1: pip version in python:3.13 image')
     print(q1_pip_version())
-    print('\nQuestion 2: pgadmin host:port')
-    print(q2_pgadmin_host_port())
+
 
     engine = connect_engine()
 
@@ -168,6 +159,3 @@ if __name__ == '__main__':
 
     print('\nQuestion 6: dropoff zone with largest tip for pickups in East Harlem North')
     print(q6_dropoff_zone_largest_tip(engine, dt_col, year))
-
-    print('\nQuestion 7: Terraform workflow answer')
-    print(q7_terraform_workflow())
