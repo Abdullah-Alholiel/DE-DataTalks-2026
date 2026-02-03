@@ -1,0 +1,52 @@
+id: homework_q1_q5_single_file_stats
+namespace: zoomcamp
+description: |
+  Homework Q1 & Q5: Check file size and row count for a single month
+  Q1: Yellow taxi 2020-12 file size
+  Q5: Yellow taxi 2021-03 row count
+
+inputs:
+  - id: taxi
+    type: SELECT
+    displayName: Select taxi type
+    values: [yellow, green]
+    defaults: yellow
+
+  - id: year
+    type: SELECT
+    displayName: Select year
+    values: ["2019", "2020", "2021"]
+    defaults: "2020"
+
+  - id: month
+    type: SELECT
+    displayName: Select month
+    values: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    defaults: "12"
+
+variables:
+  file: "{{inputs.taxi}}_tripdata_{{inputs.year}}-{{inputs.month}}.csv"
+
+tasks:
+  - id: extract_and_analyze
+    type: io.kestra.plugin.scripts.shell.Commands
+    outputFiles:
+      - "*.csv"
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    commands:
+      - echo "Downloading {{render(vars.file)}}.gz..."
+      - wget -qO- https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
+      - echo ""
+      - echo "=== FILE INFORMATION ==="
+      - echo "Filename{{':' }} {{render(vars.file)}}"
+      - echo -n "File size (human readable){{':'}} "
+      - ls -lh {{render(vars.file)}} | awk '{print $5}'
+      - echo -n "File size (bytes){{':'}} "
+      - ls -l {{render(vars.file)}} | awk '{print $5}'
+      - echo ""
+      - echo "=== ROW COUNT ==="
+      - echo -n "Total rows (including header){{':'}} "
+      - wc -l {{render(vars.file)}} | awk '{print $1}'
+      - echo -n "Data rows (excluding header){{':'}} "
+      - tail -n +2 {{render(vars.file)}} | wc -l | awk '{print $1}'

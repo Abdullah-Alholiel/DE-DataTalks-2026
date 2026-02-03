@@ -1,0 +1,47 @@
+id: homework_q3_q4_yearly_row_counter
+namespace: zoomcamp
+description: |
+  Homework Q3 & Q4: Count total rows for all 12 months in a year
+  Q3: Yellow taxi 2020 total rows
+  Q4: Green taxi 2020 total rows
+
+inputs:
+  - id: taxi
+    type: SELECT
+    displayName: Select taxi type
+    values: [yellow, green]
+    defaults: yellow
+  
+  - id: year
+    type: SELECT  
+    displayName: Select year
+    values: ["2020", "2021"]
+    defaults: "2020"
+
+tasks:
+  - id: batch_process
+    type: io.kestra.plugin.scripts.shell.Commands
+    outputFiles:
+      - "*.csv"
+    taskRunner:
+      type: io.kestra.plugin.core.runner.Process
+    commands:
+      - echo "=== BATCH PROCESSING {{inputs.taxi}} TAXI DATA FOR {{inputs.year}} ==="
+      - total_rows=0
+      - |
+        for month in 01 02 03 04 05 06 07 08 09 10 11 12; do
+          filename="{{inputs.taxi}}_tripdata_{{inputs.year}}-${month}.csv"
+          echo "Processing: ${filename}"
+          
+          # Download file
+          if wget -qO- "https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/${filename}.gz" | gunzip > "${filename}" 2>/dev/null; then
+            file_size=$(ls -lh "${filename}" | awk '{print $5}')
+            rows=$(tail -n +2 "${filename}" | wc -l | awk '{print $1}')
+            total_rows=$((total_rows + rows))
+            echo "  ✓ File: ${filename} | Size: ${file_size} | Rows: ${rows}"
+          else
+            echo "  ✗ File not found: ${filename}"
+          fi
+        done
+      - echo "=== SUMMARY ==="
+      - echo "Total rows for {{inputs.taxi}} taxi {{inputs.year}}{{':'}} ${total_rows}"
