@@ -1,0 +1,63 @@
+id: 03_homework_answers
+namespace: zoomcamp
+description: |
+  Module 3 Homework - Queries for Questions 1, 2, 4, and 6.
+
+tasks:
+  - id: q1_count_records
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: jdbc:postgresql://pgdatabase:5432/ny_taxi
+    username: root
+    password: root
+    sql: |
+      SELECT count(*) as total_records FROM yellow_tripdata_2024;
+    fetchType: FETCH_ONE
+
+  - id: q1_log_answer
+    type: io.kestra.core.tasks.log.Log
+    message: |
+      Q1: Total records = {{ outputs.q1_count_records.row.total_records }}
+
+  - id: q2_distinct_pulocationid
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: jdbc:postgresql://pgdatabase:5432/ny_taxi
+    username: root
+    password: root
+    sql: |
+      SELECT count(distinct "pulocationid") as distinct_pu_ids FROM yellow_tripdata_2024;
+    fetchType: FETCH_ONE
+
+  - id: q2_log_answer
+    type: io.kestra.core.tasks.log.Log
+    message: |
+      Q2: Distinct PULocationIDs = {{ outputs.q2_distinct_pulocationid.row.distinct_pu_ids }}
+
+  - id: q4_count_zero_fare
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: jdbc:postgresql://pgdatabase:5432/ny_taxi
+    username: root
+    password: root
+    sql: |
+      SELECT count(*) as zero_fare_count FROM yellow_tripdata_2024 WHERE fare_amount = 0;
+    fetchType: FETCH_ONE
+
+  - id: q4_log_answer
+    type: io.kestra.core.tasks.log.Log
+    message: |
+      Q4: Records with fare_amount = 0 is {{ outputs.q4_count_zero_fare.row.zero_fare_count }}
+
+  - id: q6_distinct_vendor_ids
+    type: io.kestra.plugin.jdbc.postgresql.Query
+    url: jdbc:postgresql://pgdatabase:5432/ny_taxi
+    username: root
+    password: root
+    sql: |
+      SELECT distinct "vendorid"
+      FROM yellow_tripdata_2024
+      WHERE tpep_dropoff_datetime BETWEEN '2024-03-01' AND '2024-03-15';
+    fetchType: FETCH
+
+  - id: q6_log_answer
+    type: io.kestra.core.tasks.log.Log
+    message: |
+      Q6: Distinct VendorIDs (March 1-15) retrieved successfully.

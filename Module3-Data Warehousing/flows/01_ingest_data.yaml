@@ -1,0 +1,82 @@
+id: 01_ingest_data
+namespace: zoomcamp
+description: |
+  Ingest Yellow Taxi 2024 data (Jan-Jun) into Postgres.
+  This flow uses a Python script task to download Parquet files and load them into the database.
+
+tasks:
+  - id: ingest_yellow_taxi_2024
+    type: io.kestra.plugin.scripts.python.Script
+    docker:
+      image: python:3.10-slim
+      networkMode: module3-homework_default
+    beforeCommands:
+      - pip install pandas requests sqlalchemy psycopg2-binary pyarrow fastparquet
+    script: |
+      import os
+      import pandas as pd
+      import requests
+      from sqlalchemy import create_engine
+      from time import time
+
+      # Database connection parameters
+      user = 'root'
+      password = 'root'
+      host = 'pgdatabase' # Service name in Docker Compose
+      port = '5432'
+      db = 'ny_taxi'
+      table_name = 'yellow_tripdata_2024'
+      
+      # Create engine
+      engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
+      
+      # URLs for Jan - June 2024
+      months = ['01', '02', '03', '04', '05', '06']
+      base_url = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-{}.parquet"
+
+      print(f"Starting ingestion into table '{table_name}'...")
+
+      for i, month in enumerate(months):
+          url = base_url.format(month)
+          file_name = f"yellow_tripdata_2024-{month}.parquet"
+          
+          print(f"Processing {file_name} from {url}...")
+          
+          # Download file using requests
+          try:
+              response = requests.get(url)
+              response.raise_for_status()
+              with open(file_name, 'wb') as f:
+                  f.write(response.content)
+              print(f"Downloaded {file_name}")
+          except Exception as e:
+              print(f"Failed to download {url}: {e}")
+              continue
+          
+          # Read Parquet
+          t_start = time()
+          try:
+              df = pd.read_parquet(file_name)
+          except Exception as e:
+              print(f"Failed to read parquet {file_name}: {e}")
+              continue
+
+          # Clean column names
+          df.columns = [c.lower() for c in df.columns]
+          
+          # Ingest to Postgres
+          if i == 0:
+              # For the first month, replace the table
+              df.head(0).to_sql(name=table_name, con=engine, if_exists='replace')
+              print(f"Table '{table_name}' created schema.")
+          
+          # Append data
+          df.to_sql(name=table_name, con=engine, if_exists='append', chunksize=100000)
+          
+          t_end = time()
+          print(f"Inserted {len(df)} rows from {file_name} in {t_end - t_start:.3f} seconds.")
+          
+          # Cleanup
+          os.remove(file_name)
+
+      print("All data loaded successfully!")
