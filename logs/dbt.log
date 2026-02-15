@@ -1,0 +1,32 @@
+[0m22:48:02.182703 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111ca6340>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x105499550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1153a5280>]}
+
+
+============================== 22:48:02.189224 | 369a93f5-f6a8-49c9-ae4c-cccae1ea3478 ==============================
+[0m22:48:02.189224 [info ] [MainThread]: Running with dbt=1.10.19
+[0m22:48:02.190083 [debug] [MainThread]: running dbt with arguments {'log_format': 'default', 'send_anonymous_usage_stats': 'True', 'invocation_command': 'dbt debug', 'static_parser': 'True', 'cache_selected_only': 'False', 'use_experimental_parser': 'False', 'indirect_selection': 'eager', 'no_print': 'None', 'partial_parse': 'True', 'debug': 'False', 'warn_error': 'None', 'target_path': 'None', 'use_colors': 'True', 'version_check': 'True', 'quiet': 'False', 'profiles_dir': '/Users/abdullahalholaiel/.dbt', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'fail_fast': 'False', 'log_path': 'logs', 'write_json': 'True', 'empty': 'None', 'printer_width': '80', 'introspect': 'True', 'log_cache_events': 'False'}
+[0m22:48:02.205493 [info ] [MainThread]: dbt version: 1.10.19
+[0m22:48:02.205891 [info ] [MainThread]: python version: 3.9.6
+[0m22:48:02.206161 [info ] [MainThread]: python path: /Library/Developer/CommandLineTools/usr/bin/python3
+[0m22:48:02.206413 [info ] [MainThread]: os info: macOS-15.6.1-arm64-arm-64bit
+[0m22:48:02.206953 [error] [MainThread]: Encountered an error:
+local variable 'summary_message' referenced before assignment
+[0m22:48:02.216872 [error] [MainThread]: Traceback (most recent call last):
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/cli/requires.py", line 178, in wrapper
+    result, success = func(*args, **kwargs)
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/cli/requires.py", line 128, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/cli/main.py", line 420, in debug
+    results = task.run()
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/task/debug.py", line 114, in run
+    load_profile_status: SubtaskStatus = self._load_profile()
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/task/debug.py", line 201, in _load_profile
+    profile_names, summary_message = self._choose_profile_names()
+  File "/Users/abdullahalholaiel/Library/Python/3.9/lib/python/site-packages/dbt/task/debug.py", line 276, in _choose_profile_names
+    return profiles, summary_message
+UnboundLocalError: local variable 'summary_message' referenced before assignment
+
+[0m22:48:02.219469 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.24556854, "process_in_blocks": "0", "process_kernel_time": 0.141487, "process_mem_max_rss": "98205696", "process_out_blocks": "0", "process_user_time": 0.76497}
+[0m22:48:02.219788 [debug] [MainThread]: Command `dbt debug` failed at 22:48:02.219718 after 0.25 seconds
+[0m22:48:02.220041 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x111ca6340>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1153958b0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x115395340>]}
+[0m22:48:02.220305 [debug] [MainThread]: Flushing usage events
+[0m22:48:04.845282 [debug] [MainThread]: An error was encountered while trying to flush usage events
